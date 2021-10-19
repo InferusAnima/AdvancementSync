@@ -1,16 +1,9 @@
 package com.infr.advancementsync;
 
 import net.minecraft.advancements.Advancement;
-import net.minecraft.advancements.AdvancementManager;
 import net.minecraft.advancements.AdvancementProgress;
-import net.minecraft.advancements.PlayerAdvancements;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.command.impl.AdvancementCommand;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.server.management.PlayerList;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.players.PlayerList;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -23,8 +16,8 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fmlserverevents.FMLServerStartingEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -89,11 +82,11 @@ public class AdvancementSync
     public void onAdvancement(AdvancementEvent event) {
         Advancement advancement = event.getAdvancement();
         PlayerList players =  event.getPlayer().getServer().getPlayerList();
-        for (ServerPlayerEntity i : players.getPlayers()) {
-            AdvancementProgress advancementprogress = i.getAdvancements().getProgress(advancement);
+        for (ServerPlayer i : players.getPlayers()) {
+            AdvancementProgress advancementprogress = i.getAdvancements().getOrStartProgress(advancement);
             if (!advancementprogress.isDone()) {
-                for(String s : advancementprogress.getRemaningCriteria()) {
-                    i.getAdvancements().grantCriterion(advancement, s);
+                for(String s : advancementprogress.getRemainingCriteria()) {
+                    i.getAdvancements().award(advancement, s);
                 }
             }
         }
@@ -103,50 +96,39 @@ public class AdvancementSync
     @SubscribeEvent
     public void onPlayerJoined(PlayerEvent.PlayerLoggedInEvent event) {
         PlayerList players = event.getPlayer().getServer().getPlayerList();
-        ServerPlayerEntity player = null;
-        for (ServerPlayerEntity i : players.getPlayers()) {
-            if  (i.getUniqueID() == event.getPlayer().getUniqueID()) {
+        ServerPlayer player = null;
+        for (ServerPlayer i : players.getPlayers()) {
+            if  (i.getUUID() == event.getPlayer().getUUID()) {
                 player = i;
             }
         }
-        for (ServerPlayerEntity i : players.getPlayers()) {
-            for (Advancement advancement : i.getServer().getAdvancementManager().getAllAdvancements()) {
-                AdvancementProgress advancementprogress = i.getAdvancements().getProgress(advancement);
+        for (ServerPlayer i : players.getPlayers()) {
+            for (Advancement advancement : i.getServer().getAdvancements().getAllAdvancements()) {
+                AdvancementProgress advancementprogress = i.getAdvancements().getOrStartProgress(advancement);
                 if (advancementprogress.isDone()) {
-                    AdvancementProgress advancementprogresss = player.getAdvancements().getProgress(advancement);
+                    AdvancementProgress advancementprogresss = player.getAdvancements().getOrStartProgress(advancement);
                     if (!advancementprogresss.isDone()) {
-                        for(String s : advancementprogresss.getRemaningCriteria()) {
-                            player.getAdvancements().grantCriterion(advancement, s);
+                        for(String s : advancementprogresss.getRemainingCriteria()) {
+                            player.getAdvancements().award(advancement, s);
                         }
                     }
 
                 }
             }
         }
-        for (ServerPlayerEntity i : players.getPlayers()) {
-            for (Advancement advancement : i.getServer().getAdvancementManager().getAllAdvancements()) {
-                AdvancementProgress advancementprogress = player.getAdvancements().getProgress(advancement);
+        for (ServerPlayer i : players.getPlayers()) {
+            for (Advancement advancement : i.getServer().getAdvancements().getAllAdvancements()) {
+                AdvancementProgress advancementprogress = player.getAdvancements().getOrStartProgress(advancement);
                 if (advancementprogress.isDone()) {
-                    AdvancementProgress advancementprogresss = i.getAdvancements().getProgress(advancement);
+                    AdvancementProgress advancementprogresss = i.getAdvancements().getOrStartProgress(advancement);
                     if (!advancementprogresss.isDone()) {
-                        for(String s : advancementprogresss.getRemaningCriteria()) {
-                            i.getAdvancements().grantCriterion(advancement, s);
+                        for(String s : advancementprogresss.getRemainingCriteria()) {
+                            i.getAdvancements().award(advancement, s);
                         }
                     }
 
                 }
             }
-        }
-    }
-
-    // You can use EventBusSubscriber to automatically subscribe events on the contained class (this is subscribing to the MOD
-    // Event bus for receiving Registry Events)
-    @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD)
-    public static class RegistryEvents {
-        @SubscribeEvent
-        public static void onBlocksRegistry(final RegistryEvent.Register<Block> blockRegistryEvent) {
-            // register a new block here
-            //LOGGER.info("HELLO from Register Block");
         }
     }
 }
