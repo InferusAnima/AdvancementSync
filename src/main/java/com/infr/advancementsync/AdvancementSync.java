@@ -5,8 +5,6 @@ import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.AdvancementEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -81,7 +79,7 @@ public class AdvancementSync
     @SubscribeEvent
     public void onAdvancement(AdvancementEvent event) {
         Advancement advancement = event.getAdvancement();
-        PlayerList players =  event.getPlayer().getServer().getPlayerList();
+        PlayerList players =  event.getEntity().getServer().getPlayerList();
         for (ServerPlayer i : players.getPlayers()) {
             AdvancementProgress advancementprogress = i.getAdvancements().getOrStartProgress(advancement);
             if (!advancementprogress.isDone()) {
@@ -95,10 +93,10 @@ public class AdvancementSync
 
     @SubscribeEvent
     public void onPlayerJoined(PlayerEvent.PlayerLoggedInEvent event) {
-        PlayerList players = event.getPlayer().getServer().getPlayerList();
+        PlayerList players = event.getEntity().getServer().getPlayerList();
         ServerPlayer player = null;
         for (ServerPlayer i : players.getPlayers()) {
-            if  (i.getUUID() == event.getPlayer().getUUID()) {
+            if  (i.getUUID() == event.getEntity().getUUID()) {
                 player = i;
             }
         }
