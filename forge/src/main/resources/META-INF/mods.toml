@@ -1,0 +1,35 @@
+modLoader = "javafml"
+loaderVersion = "[47,)"
+#issueTrackerURL = ""
+license = "All rights reserved"
+
+[[mods]]
+modId = "advancementsync"
+version = "${version}"
+displayName = "AdvancementSync"
+authors = "InferusAnima"
+description = '''
+Mod for syncing all advancements between players on server.
+'''
+logoFile = "logo.png"
+
+[[dependencies.advancementsync]]
+modId = "forge"
+mandatory = true
+versionRange = "[47,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.advancementsync]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.20.1,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.advancementsync]]
+modId = "architectury"
+mandatory = true
+versionRange = "[9.1.12,)"
+ordering = "AFTER"
+side = "BOTH"

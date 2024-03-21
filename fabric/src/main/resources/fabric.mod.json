@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "advancementsync",
+  "version": "${version}",
+  "name": "AdvancementSync",
+  "description": "Mod for syncing all advancements between players on server.",
+  "authors": [
+    "InferusAnima"
+  ],
+  "contact": {
+    "sources": "https://github.com/InferusAnima/AdvancementSync"
+  },
+  "license": "All rights reserved",
+  "icon": "logo.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.infr.advancementsync.fabric.AdvancementSyncFabric"
+    ]
+  },
+  "depends": {
+    "fabric": "*",
+    "minecraft": ">=1.20.1",
+    "architectury": ">=9.1.12"
+  }
+}
